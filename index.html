@@ -61,7 +61,7 @@
 
   .bars{display:flex;flex-direction:column;gap:7px;min-width:0}
   .barline{display:flex;align-items:center;gap:10px}
-  .barlbl{font-size:9.5px;letter-spacing:.8px;color:var(--dim);width:54px;flex:0 0 auto;text-transform:uppercase}
+  .barlbl{font-size:9.5px;letter-spacing:.8px;color:var(--dim);width:64px;flex:0 0 auto;text-transform:uppercase;white-space:nowrap}
   .track{flex:1;height:14px;background:#0c1116;border:1px solid var(--line);border-radius:3px;overflow:hidden;position:relative}
   .fill{height:100%;border-radius:0;transition:width .5s cubic-bezier(.2,.7,.2,1)}
   .fill.fort{background:linear-gradient(90deg,#10402f,var(--fort))}
@@ -111,7 +111,7 @@
          border-top:1px solid var(--line);padding-top:13px;text-align:left}
     .covbox{text-align:left} .netbox{text-align:right;margin-top:0}
     .cov .net{margin-top:0}
-    .barlbl{width:48px}
+    .barlbl{width:60px}
     .barval{width:60px}
     .ticker{padding:20px 14px;margin-top:30px}
     footer{font-size:11px}
@@ -149,7 +149,7 @@
     </div>
 
     <div class="cards">
-      <div class="card"><div class="n r" id="c-total">$850B</div><div class="l">Combined 2026 AI capex (est.)</div></div>
+      <div class="card"><div class="n r" id="c-total">$950B</div><div class="l">Combined 2026 AI capex (est.)</div></div>
       <div class="card"><div class="n g">4 of 7</div><div class="l">Can self-fund it &mdash; on FY2025 actuals</div></div>
       <div class="card"><div class="n y">0 of 7</div><div class="l">Still above 1.0&times; on 2026 guidance</div></div>
     </div>
@@ -188,7 +188,7 @@
     A tall <span style="color:var(--fort)">green</span> bar dwarfing a short <span style="color:var(--burn)">red</span> one = a cash fortress easily covering its AI spend. When red overtakes green, the company is funding AI from its balance sheet, not its surplus. The labs have <span style="color:#ff7ad0">no green bar at all</span>. Net cash is positive (own the money) or negative (owe it).
 
     <h3>Methodology &amp; honest caveats</h3>
-    Burn Coverage uses <span class="rep">reported</span> operating cash flow &divide; <span class="rep">reported</span> capital expenditure. &ldquo;Capex&rdquo; is used as the AI-spend proxy because for these firms it is now overwhelmingly AI data-centre buildout &mdash; though a minority is non-AI (fulfilment, offices). Microsoft capex shown on the cash &ldquo;additions to property &amp; equipment&rdquo; basis (~$64B FY25; ~$88B incl. finance leases). Amazon OCF is trailing-twelve-months to Mar&nbsp;2026; net cash shown on a long-term-debt basis (it flips to net-debt if operating leases are included). Net cash = cash &amp; marketable securities &minus; debt; Oracle uses total notes payable ($129.5B). The labs&rsquo; &ldquo;burn&rdquo; is annualised compute spend, an <span class="est">estimate</span>; they have no public cash-flow statement. The $850B combined-capex ticker is an <span class="est">estimate</span> built from 2026 guidance midpoints and is illustrative.
+    Burn Coverage uses <span class="rep">reported</span> operating cash flow &divide; <span class="rep">reported</span> capital expenditure. &ldquo;Capex&rdquo; is used as the AI-spend proxy because for these firms it is now overwhelmingly AI data-centre buildout &mdash; though a minority is non-AI (fulfilment, offices). Microsoft capex shown on the cash &ldquo;additions to property &amp; equipment&rdquo; basis (~$64B FY25; ~$88B incl. finance leases). Amazon OCF is trailing-twelve-months to Mar&nbsp;2026; net cash shown on a long-term-debt basis (it flips to net-debt if operating leases are included). Net cash = cash &amp; marketable securities &minus; debt; Oracle uses total notes payable ($129.5B). The labs own no data centres, so their bar is annualised compute <em>commitment</em> &mdash; OpenAI ~$1.4T &divide; ~8yr &asymp; $175B, Anthropic ~$200B &divide; 5yr &asymp; $40B &mdash; an <span class="est">estimate</span>, not capex; they have no public cash-flow statement. The $950B combined-capex ticker is an <span class="est">estimate</span> built from 2026 guidance midpoints (labs on a commitment basis) and is illustrative.
 
     <h3>Sources</h3>
     <span class="rep">Reported</span> &mdash;
@@ -208,11 +208,11 @@
 // ocf/capex/capexFwd in $B (annual). netCash $B (+net cash / -net debt). private => no fortress.
 const DATA = [
   { name:"OpenAI", meta:"private &middot; founded 2015 &middot; $852B val (Mar 2026)", color:"#10a37f",
-    private:true, ocf:null, capex:40, capexFwd:100, rev:"$25B run-rate", net:"+$122B raised",
-    netVal:122, shock:"~$1.4T compute commitments vs ~$13B FY25 revenue", badge:["b-nofort","Runs on others&rsquo; money"] },
+    private:true, ocf:null, capex:175, capexFwd:175, rev:"$25B run-rate", net:"+$122B raised",
+    netVal:122, shock:"~$1.4T compute commitments (~$175B/yr &divide; 8yr) vs ~$13B FY25 revenue", badge:["b-nofort","Runs on others&rsquo; money"] },
   { name:"Anthropic", meta:"private &middot; founded 2021 &middot; $965B val (Apr 2026)", color:"#cc7a52",
-    private:true, ocf:null, capex:40, capexFwd:60, rev:"$30B run-rate", net:"+$132B raised",
-    netVal:132, shock:"~$200B Google Cloud commitment vs ~$4.5B FY25 revenue", badge:["b-nofort","Runs on others&rsquo; money"] },
+    private:true, ocf:null, capex:40, capexFwd:40, rev:"$30B run-rate", net:"+$132B raised",
+    netVal:132, shock:"~$200B Google Cloud commitment (~$40B/yr &divide; 5yr) vs ~$4.5B FY25 revenue", badge:["b-nofort","Runs on others&rsquo; money"] },
   { name:"Oracle", meta:"FY26 (May 2026) &middot; FCF &minus;$23.7B &middot; RPO $638B", color:"#ec4b3a",
     ocf:32.0, capex:55.7, capexFwd:90, rev:"Cloud ~$37B", net:-118,
     shock:"Only public name spending more than it earns &mdash; on $129.5B of debt", badge:["b-credit","Credit card"] },
@@ -268,11 +268,12 @@ function render(){
 
     const fortBar = d.private
       ? `<div class="nofort">&times; NO FORTRESS &mdash; ${d.shock}</div>`
-      : `<div class="barline"><span class="barlbl">cash flow</span>
+      : `<div class="barline"><span class="barlbl">cash&nbsp;flow</span>
            <div class="track"><div class="fill fort" style="width:${ocfW}%"></div></div>
            <span class="barval g">${fmtB(d.ocf)}</span></div>`;
 
-    const burnBar = `<div class="barline"><span class="barlbl">${mode==="fwd"?"capex&rsquo;26":"capex"}</span>
+    const burnLbl = d.private ? "compute" : (mode==="fwd" ? "capex&rsquo;26" : "capex");
+    const burnBar = `<div class="barline"><span class="barlbl">${burnLbl}</span>
            <div class="track"><div class="fill burn" style="width:${cxW}%"></div></div>
            <span class="barval r">${fmtB(capex)}</span></div>`;
 
@@ -313,7 +314,7 @@ document.getElementById("sort").addEventListener("click", e=>{
 });
 
 // live ticker: combined 2026E capex ~$850B/yr
-const COMBINED = 850e9, perSec = COMBINED / (365.25*24*3600);
+const COMBINED = 950e9, perSec = COMBINED / (365.25*24*3600);
 const t0 = performance.now();
 const tick = document.getElementById("tick");
 function loop(now){
