@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Can They Afford It?</title>
+<style>
+  :root{
+    --bg:#0a0e12; --panel:#11161c; --panel2:#0d1217; --line:#1e2730;
+    --ink:#e7edf3; --mut:#7c8a99; --dim:#4b5663;
+    --burn:#ff5c3a; --burn-d:#7a2417; --fort:#34d399; --fort-d:#10402f;
+    --warn:#f5b73d; --ok:#34d399; --bad:#ff5c3a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    -webkit-font-smoothing:antialiased;}
+  body{background-image:repeating-linear-gradient(135deg,#0c1016 0 2px,transparent 2px 26px);}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 22px 90px;}
+  header{padding:54px 0 10px;}
+  h1{font-size:clamp(42px,9vw,104px);line-height:.92;margin:0;font-weight:800;letter-spacing:-2px;}
+  h1 .q{color:var(--ink)}
+  .sub{color:var(--mut);max-width:640px;margin:22px 0 0;font-size:14px;line-height:1.6;letter-spacing:.3px}
+  .sub a{color:var(--burn);text-decoration:none;border-bottom:1px dotted var(--burn)}
+  .verdict{margin:30px 0 0;font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.05;color:var(--burn)}
+  .verdict small{display:block;font-size:14px;font-weight:500;color:var(--mut);margin-top:16px;line-height:1.7;letter-spacing:.2px}
+  .verdict b.ok{color:var(--ok)} .verdict b.warn{color:var(--warn)} .verdict b.bad{color:var(--bad)}
+
+  .method{margin:30px 0 0;padding:18px 20px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+    font-size:12.5px;color:var(--mut);line-height:1.7;letter-spacing:.2px}
+  .method b{color:var(--ink)} .method .g{color:var(--fort)} .method .r{color:var(--burn)} .method .y{color:var(--warn)}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 18px 16px}
+  .card .n{font-size:30px;font-weight:800;letter-spacing:-1px}
+  .card .n.r{color:var(--burn)} .card .n.g{color:var(--fort)} .card .n.y{color:var(--warn)}
+  .card .l{font-size:10.5px;letter-spacing:1.4px;color:var(--dim);text-transform:uppercase;margin-top:8px}
+
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:30px 0 6px}
+  .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{background:transparent;color:var(--mut);border:0;padding:9px 15px;font:inherit;font-size:12px;cursor:pointer;letter-spacing:.5px}
+  .seg button.on{background:var(--burn);color:#160a06;font-weight:700}
+  .controls .spacer{flex:1}
+  .sort{display:flex;gap:6px;flex-wrap:wrap}
+  .sort button{background:transparent;color:var(--mut);border:1px solid var(--line);border-radius:7px;padding:8px 12px;font:inherit;font-size:11.5px;cursor:pointer;letter-spacing:.4px}
+  .sort button.on{border-color:var(--burn);color:var(--ink)}
+
+  .head{display:grid;grid-template-columns:230px 1fr 150px;gap:18px;padding:14px 6px 10px;border-bottom:1px solid var(--line);
+    font-size:10px;letter-spacing:1.3px;text-transform:uppercase;color:var(--dim)}
+  .head .r3{text-align:right}
+  .row{display:grid;grid-template-columns:230px 1fr 150px;gap:18px;padding:20px 6px;border-bottom:1px solid var(--line);align-items:center}
+  .row:hover{background:#0d1218}
+  .co .name{font-size:18px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:9px}
+  .dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+  .co .meta{font-size:11px;color:var(--dim);margin-top:5px;line-height:1.5}
+  .badge{display:inline-block;margin-top:9px;font-size:10px;letter-spacing:.6px;padding:4px 9px;border-radius:5px;font-weight:700;text-transform:uppercase}
+  .b-house{background:var(--fort-d);color:var(--fort)}
+  .b-strain{background:#4a3a12;color:var(--warn)}
+  .b-credit{background:var(--burn-d);color:#ff8a6f}
+  .b-nofort{background:#3a1230;color:#ff7ad0}
+
+  .bars{display:flex;flex-direction:column;gap:7px;min-width:0}
+  .barline{display:flex;align-items:center;gap:10px}
+  .barlbl{font-size:9.5px;letter-spacing:.8px;color:var(--dim);width:54px;flex:0 0 auto;text-transform:uppercase}
+  .track{flex:1;height:14px;background:#0c1116;border:1px solid var(--line);border-radius:3px;overflow:hidden;position:relative}
+  .fill{height:100%;border-radius:0;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  .fill.fort{background:linear-gradient(90deg,#10402f,var(--fort))}
+  .fill.burn{background:linear-gradient(90deg,#7a2417,var(--burn))}
+  .barval{font-size:11.5px;width:64px;flex:0 0 auto;text-align:right;color:var(--mut);font-variant-numeric:tabular-nums}
+  .barval.g{color:var(--fort)} .barval.r{color:var(--burn)}
+  .nofort{font-size:11px;color:#ff7ad0;letter-spacing:.5px;padding:3px 0}
+
+  .cov{text-align:right}
+  .cov .num{font-size:30px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1}
+  .cov .num.ok{color:var(--ok)} .cov .num.warn{color:var(--warn)} .cov .num.bad{color:var(--burn)}
+  .cov .clbl{font-size:9px;letter-spacing:1px;color:var(--dim);text-transform:uppercase;margin-top:6px}
+  .cov .net{font-size:12px;margin-top:9px;font-variant-numeric:tabular-nums}
+  .cov .net.pos{color:var(--fort)} .cov .net.neg{color:var(--burn)}
+  .cov .netl{font-size:8.5px;letter-spacing:.8px;color:var(--dim);text-transform:uppercase}
+
+  .ticker{margin:40px 0 0;padding:24px 22px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;text-align:center}
+  .ticker .t{font-size:clamp(30px,6vw,52px);font-weight:800;color:var(--burn);font-variant-numeric:tabular-nums;letter-spacing:-1px}
+  .ticker .tl{font-size:11px;letter-spacing:1.4px;color:var(--dim);text-transform:uppercase;margin-top:10px}
+
+  footer{margin:48px 0 0;padding-top:24px;border-top:1px solid var(--line);font-size:11px;color:var(--dim);line-height:1.85}
+  footer h3{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin:22px 0 8px}
+  footer a{color:var(--mut);text-decoration:none;border-bottom:1px dotted var(--dim)}
+  footer .est{color:var(--warn)} footer .rep{color:var(--fort)}
+  @media(max-width:760px){
+    .cards{grid-template-columns:1fr}
+    .head{display:none}
+    .row{grid-template-columns:1fr;gap:14px}
+    .cov{text-align:left;display:flex;gap:26px;align-items:flex-end}
+    .cov .net{margin-top:0}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="q">CAN&nbsp;THEY<br>AFFORD&nbsp;IT?</span></h1>
+    <p class="sub">The question <a href="https://isaiprofitable.com/" target="_blank" rel="noopener">isaiprofitable.com</a> forgot to ask. AI is unprofitable for every one of them &mdash; that part&rsquo;s settled. The only question that decides who&rsquo;s still standing in 2029 is who can <em>afford</em> to keep losing. Figures: latest fiscal year, June&nbsp;2026.</p>
+
+    <div class="verdict">
+      AI IS UNPROFITABLE FOR ALL OF THEM.
+      <small>
+        <b class="ok">Three can shrug it off</b> &mdash; Microsoft, Alphabet, Meta fund the entire buildout from spare cash.&nbsp;
+        <b class="warn">One fortress is straining</b> &mdash; Amazon&rsquo;s free cash flow has nearly vanished.&nbsp;
+        <b class="bad">One is doing it on a credit card</b> &mdash; Oracle spends ~2&times; what it earns, on $129B of debt.&nbsp;
+        <b class="bad">Two are spending other people&rsquo;s money</b> &mdash; OpenAI and Anthropic have no business underneath at all.
+      </small>
+    </div>
+
+    <div class="method">
+      <b>Methodology &mdash; Burn Coverage = operating cash flow &divide; capital expenditure.</b>
+      <span class="g">Above 1.0&times;</span>: the core business pays for the whole AI buildout and still throws off cash &mdash; <i>house money</i>.
+      <span class="r">Below 1.0&times;</span>: spending more than the entire company generates, funding the gap with debt or outside capital &mdash; <i>credit card</i>.
+      <span class="y">No fortress</span>: no independent operating cash flow whatsoever &mdash; the spend runs entirely on investors&rsquo; capital.
+      Flip the toggle to <b>2026 guidance</b> and watch even the fortresses slide toward the line.
+    </div>
+
+    <div class="cards">
+      <div class="card"><div class="n r" id="c-total">$850B</div><div class="l">Combined 2026 AI capex (est.)</div></div>
+      <div class="card"><div class="n g">4 of 7</div><div class="l">Can self-fund it &mdash; on FY2025 actuals</div></div>
+      <div class="card"><div class="n y">0 of 7</div><div class="l">Still above 1.0&times; on 2026 guidance</div></div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="seg" id="mode">
+      <button data-mode="actual" class="on">FY2025 ACTUAL</button>
+      <button data-mode="fwd">2026 GUIDANCE</button>
+    </div>
+    <div class="spacer"></div>
+    <div class="sort" id="sort">
+      <button data-k="danger" class="on">Most precarious</button>
+      <button data-k="cov">Coverage</button>
+      <button data-k="net">Net cash</button>
+      <button data-k="capex">Capex</button>
+      <button data-k="az">A&ndash;Z</button>
+    </div>
+  </div>
+
+  <div class="head">
+    <div>Company</div>
+    <div>&middot; Operating cash flow (fortress)&nbsp;&nbsp;&middot; Capital expenditure (burn)</div>
+    <div class="r3">Burn coverage</div>
+  </div>
+
+  <div id="board"></div>
+
+  <div class="ticker">
+    <div class="t" id="tick">$0</div>
+    <div class="tl">Estimated AI capex burned across these 7 since you opened this page</div>
+  </div>
+
+  <footer>
+    <h3>How to read it</h3>
+    A tall <span style="color:var(--fort)">green</span> bar dwarfing a short <span style="color:var(--burn)">red</span> one = a cash fortress easily covering its AI spend. When red overtakes green, the company is funding AI from its balance sheet, not its surplus. The labs have <span style="color:#ff7ad0">no green bar at all</span>. Net cash is positive (own the money) or negative (owe it).
+
+    <h3>Methodology &amp; honest caveats</h3>
+    Burn Coverage uses <span class="rep">reported</span> operating cash flow &divide; <span class="rep">reported</span> capital expenditure. &ldquo;Capex&rdquo; is used as the AI-spend proxy because for these firms it is now overwhelmingly AI data-centre buildout &mdash; though a minority is non-AI (fulfilment, offices). Microsoft capex shown on the cash &ldquo;additions to property &amp; equipment&rdquo; basis (~$64B FY25; ~$88B incl. finance leases). Amazon OCF is trailing-twelve-months to Mar&nbsp;2026; net cash shown on a long-term-debt basis (it flips to net-debt if operating leases are included). Net cash = cash &amp; marketable securities &minus; debt; Oracle uses total notes payable ($129.5B). The labs&rsquo; &ldquo;burn&rdquo; is annualised compute spend, an <span class="est">estimate</span>; they have no public cash-flow statement. The $850B combined-capex ticker is an <span class="est">estimate</span> built from 2026 guidance midpoints and is illustrative.
+
+    <h3>Sources</h3>
+    <span class="rep">Reported</span> &mdash;
+    Oracle FY26 Q4 (<a href="https://www.prnewswire.com/news-releases/oracle-announces-record-q4-and-fy-2026-results-driven-by-cloud-infrastructure--cloud-applications-302797201.html" target="_blank" rel="noopener">PRNewswire</a>);
+    Microsoft FY25 10-K &amp; Q3 FY26 ($37B AI run-rate);
+    Alphabet FY25 10-K;
+    Amazon Q4&rsquo;25 &amp; Q1&rsquo;26 IR;
+    Meta FY25 release.
+    <span class="est">Press estimates</span> for private labs &mdash; OpenAI ($25B run-rate, ~$13B FY25 rev, $122B round / $852B val, ~$1.4T compute commitments): Reuters, CNBC, Bloomberg, Fortune. Anthropic ($30B run-rate, ~$4.5B FY25 rev, ~$132B raised / $965B val, ~$200B Google Cloud commitment): Reuters, VentureBeat, Fortune, Anthropic Series&nbsp;H.
+
+    <h3>&nbsp;</h3>
+    A companion piece to <a href="https://isaiprofitable.com/" target="_blank" rel="noopener">isaiprofitable.com</a> &mdash; same dark joke, one layer deeper. Profitability is the wrong question; survivability is the question. Built June&nbsp;2026. Not investment advice; just arithmetic.
+  </footer>
+</div>
+
+<script>
+// ocf/capex/capexFwd in $B (annual). netCash $B (+net cash / -net debt). private => no fortress.
+const DATA = [
+  { name:"OpenAI", meta:"private &middot; founded 2015 &middot; $852B val (Mar 2026)", color:"#10a37f",
+    private:true, ocf:null, capex:40, capexFwd:100, rev:"$25B run-rate", net:"+$122B raised",
+    netVal:122, shock:"~$1.4T compute commitments vs ~$13B FY25 revenue", badge:["b-nofort","Runs on others&rsquo; money"] },
+  { name:"Anthropic", meta:"private &middot; founded 2021 &middot; $965B val (Apr 2026)", color:"#cc7a52",
+    private:true, ocf:null, capex:40, capexFwd:60, rev:"$30B run-rate", net:"+$132B raised",
+    netVal:132, shock:"~$200B Google Cloud commitment vs ~$4.5B FY25 revenue", badge:["b-nofort","Runs on others&rsquo; money"] },
+  { name:"Oracle", meta:"FY26 (May 2026) &middot; FCF &minus;$23.7B &middot; RPO $638B", color:"#ec4b3a",
+    ocf:32.0, capex:55.7, capexFwd:90, rev:"Cloud ~$37B", net:-118,
+    shock:"Only public name spending more than it earns &mdash; on $129.5B of debt", badge:["b-credit","Credit card"] },
+  { name:"Amazon", meta:"FY25 / TTM Mar&rsquo;26 &middot; FCF collapsed to $1.2B", color:"#ff9900",
+    ocf:148.5, capex:131.8, capexFwd:200, rev:"AWS $129B", net:57,
+    shock:"Fortress intact, but free cash flow has nearly evaporated", badge:["b-strain","Straining"] },
+  { name:"Meta", meta:"FY25 &middot; FCF $43.6B &middot; no external AI revenue", color:"#0a84ff",
+    ocf:115.8, capex:72.2, capexFwd:135, rev:"AI internal", net:23,
+    shock:"Comfortable today; 2026 guidance pushes it under the line", badge:["b-house","House money"] },
+  { name:"Alphabet", meta:"FY25 &middot; FCF $73B &middot; first $400B revenue year", color:"#34a853",
+    ocf:164.7, capex:91.4, capexFwd:185, rev:"Cloud ~$80B", net:80,
+    shock:"+$80B net cash &mdash; deepest war chest of the fortresses", badge:["b-house","House money"] },
+  { name:"Microsoft", meta:"FY25 (Jun 2025) &middot; $37B AI run-rate &middot; FCF ~$72B", color:"#7cb900",
+    ocf:136.2, capex:64.0, capexFwd:140, rev:"Azure >$75B", net:34,
+    shock:"Highest coverage of all &mdash; the buildout barely dents the cash machine", badge:["b-house","House money"] },
+];
+
+const BAR_MAX = 200; // $B, shared scale across both modes
+let mode = "actual", sortKey = "danger";
+
+const cov = (d, m) => {
+  if (d.private) return null;
+  const cx = m === "fwd" ? d.capexFwd : d.capex;
+  return d.ocf / cx;
+};
+const covClass = c => c === null ? "bad" : c >= 1.3 ? "ok" : c >= 1.0 ? "warn" : "bad";
+const fmtB = v => "$" + (v % 1 === 0 ? v : v.toFixed(1)) + "B";
+
+function rankDanger(d){ // ascending = most precarious first
+  if (d.private) return -100 + d.netVal/1000;        // labs first
+  const c = cov(d, mode);
+  return c;                                           // then by coverage
+}
+
+function sortData(){
+  const arr = DATA.slice();
+  if (sortKey === "danger") arr.sort((a,b)=>rankDanger(a)-rankDanger(b));
+  else if (sortKey === "cov") arr.sort((a,b)=>(cov(a,mode)??-1)-(cov(b,mode)??-1));
+  else if (sortKey === "net") arr.sort((a,b)=>(a.private?a.netVal:a.net)-(b.private?b.netVal:b.net)); // not perfectly comparable; ok
+  else if (sortKey === "capex") arr.sort((a,b)=> (b[mode==="fwd"?"capexFwd":"capex"]) - (a[mode==="fwd"?"capexFwd":"capex"]));
+  else if (sortKey === "az") arr.sort((a,b)=>a.name.localeCompare(b.name));
+  return arr;
+}
+
+function render(){
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+  for (const d of sortData()){
+    const c = cov(d, mode);
+    const capex = mode === "fwd" ? d.capexFwd : d.capex;
+    const ocfW = d.ocf ? Math.min(100, d.ocf / BAR_MAX * 100) : 0;
+    const cxW  = Math.min(100, capex / BAR_MAX * 100);
+
+    const fortBar = d.private
+      ? `<div class="nofort">&times; NO FORTRESS &mdash; ${d.shock}</div>`
+      : `<div class="barline"><span class="barlbl">cash flow</span>
+           <div class="track"><div class="fill fort" style="width:${ocfW}%"></div></div>
+           <span class="barval g">${fmtB(d.ocf)}</span></div>`;
+
+    const burnBar = `<div class="barline"><span class="barlbl">${mode==="fwd"?"capex&rsquo;26":"capex"}</span>
+           <div class="track"><div class="fill burn" style="width:${cxW}%"></div></div>
+           <span class="barval r">${fmtB(capex)}</span></div>`;
+
+    const covCell = d.private
+      ? `<div class="num bad">0&times;</div><div class="clbl">no coverage</div>`
+      : `<div class="num ${covClass(c)}">${c.toFixed(2)}&times;</div><div class="clbl">OCF &divide; capex</div>`;
+
+    const netCell = d.private
+      ? `<div class="net pos">${d.net}</div><div class="netl">external capital</div>`
+      : `<div class="net ${d.net>=0?'pos':'neg'}">${d.net>=0?'+':'&minus;'}$${Math.abs(d.net)}B</div><div class="netl">net ${d.net>=0?'cash':'debt'}</div>`;
+
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `
+      <div class="co">
+        <div class="name"><span class="dot" style="background:${d.color}"></span>${d.name}</div>
+        <div class="meta">${d.meta}</div>
+        <span class="badge ${d.badge[0]}">${d.badge[1]}</span>
+      </div>
+      <div class="bars">${fortBar}${burnBar}</div>
+      <div class="cov">${covCell}${netCell}</div>`;
+    board.appendChild(row);
+  }
+}
+
+// toggles
+document.getElementById("mode").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  mode = b.dataset.mode;
+  [...e.currentTarget.children].forEach(x=>x.classList.toggle("on", x===b));
+  render();
+});
+document.getElementById("sort").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  sortKey = b.dataset.k;
+  [...e.currentTarget.children].forEach(x=>x.classList.toggle("on", x===b));
+  render();
+});
+
+// live ticker: combined 2026E capex ~$850B/yr
+const COMBINED = 850e9, perSec = COMBINED / (365.25*24*3600);
+const t0 = performance.now();
+const tick = document.getElementById("tick");
+function loop(now){
+  const spent = perSec * (now - t0) / 1000;
+  tick.textContent = "$" + Math.floor(spent).toLocaleString("en-US");
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+render();
+</script>
+</body>
+</html>
