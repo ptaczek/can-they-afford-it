@@ -12,7 +12,7 @@
     --warn:#f5b73d; --ok:#34d399; --bad:#ff5c3a;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);
+  html,body{margin:0;overflow-x:hidden;background:var(--bg);color:var(--ink);
     font-family:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
     -webkit-font-smoothing:antialiased;}
   body{background-image:repeating-linear-gradient(135deg,#0c1016 0 2px,transparent 2px 26px);}
@@ -87,11 +87,40 @@
   footer a{color:var(--mut);text-decoration:none;border-bottom:1px dotted var(--dim)}
   footer .est{color:var(--warn)} footer .rep{color:var(--fort)}
   @media(max-width:760px){
-    .cards{grid-template-columns:1fr}
+    .wrap{padding:0 16px 70px}
+    header{padding:36px 0 8px}
+    h1{font-size:clamp(38px,12.5vw,96px);letter-spacing:-1px}
+    .sub{font-size:13px}
+    .verdict{font-size:clamp(25px,6.5vw,46px)}
+    .verdict small{font-size:13px}
+    .method{font-size:12px;padding:16px}
+    .cards{grid-template-columns:1fr;gap:10px}
+    .card{padding:15px 16px}
+    .card .n{font-size:27px}
+    .controls{flex-direction:column;align-items:stretch;gap:10px;margin-top:24px}
+    .controls .spacer{display:none}
+    .seg{width:100%}
+    .seg button{flex:1;text-align:center;padding:11px 8px}
+    .sort{flex-wrap:wrap}
+    .sort button{flex:1 1 calc(50% - 3px);text-align:center;padding:10px 8px}
     .head{display:none}
-    .row{grid-template-columns:1fr;gap:14px}
-    .cov{text-align:left;display:flex;gap:26px;align-items:flex-end}
+    .row{grid-template-columns:1fr;gap:13px;padding:20px 2px}
+    .co{order:1} .bars{order:2} .cov{order:3}
+    .co .name{font-size:17px}
+    .cov{display:flex;justify-content:space-between;align-items:flex-end;
+         border-top:1px solid var(--line);padding-top:13px;text-align:left}
+    .covbox{text-align:left} .netbox{text-align:right;margin-top:0}
     .cov .net{margin-top:0}
+    .barlbl{width:48px}
+    .barval{width:60px}
+    .ticker{padding:20px 14px;margin-top:30px}
+    footer{font-size:11px}
+  }
+  @media(max-width:380px){
+    h1{font-size:33px;letter-spacing:0}
+    .barlbl{display:none}
+    .barval{width:54px;font-size:11px}
+    .cov .num{font-size:26px}
   }
 </style>
 </head>
@@ -264,7 +293,7 @@ function render(){
         <span class="badge ${d.badge[0]}">${d.badge[1]}</span>
       </div>
       <div class="bars">${fortBar}${burnBar}</div>
-      <div class="cov">${covCell}${netCell}</div>`;
+      <div class="cov"><div class="covbox">${covCell}</div><div class="netbox">${netCell}</div></div>`;
     board.appendChild(row);
   }
 }
