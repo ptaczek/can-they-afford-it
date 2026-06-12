@@ -69,6 +69,11 @@
   .barval{font-size:11.5px;width:64px;flex:0 0 auto;text-align:right;color:var(--mut);font-variant-numeric:tabular-nums}
   .barval.g{color:var(--fort)} .barval.r{color:var(--burn)}
   .nofort{font-size:11px;color:#ff7ad0;letter-spacing:.5px;padding:3px 0}
+  .concbar{margin-top:10px;padding-top:9px;border-top:1px dashed var(--line)}
+  .conclbl{font-size:9px;letter-spacing:.8px;color:var(--dim);text-transform:uppercase;margin-bottom:5px}
+  .conctrack{display:flex;height:19px;border-radius:3px;overflow:hidden;border:1px solid var(--line);font-size:10px;font-weight:700;font-variant-numeric:tabular-nums}
+  .concfill{background:linear-gradient(90deg,#0c7a5a,#10a37f);color:#04130d;display:flex;align-items:center;padding:0 7px;white-space:nowrap;min-width:0}
+  .concrest{flex:1;background:#161c22;color:var(--mut);display:flex;align-items:center;padding:0 7px;white-space:nowrap}
 
   .cov{text-align:right}
   .cov .num{font-size:30px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1}
@@ -213,8 +218,8 @@ const DATA = [
   { name:"Anthropic", meta:"private &middot; founded 2021 &middot; $965B val (Apr 2026)", color:"#cc7a52",
     private:true, ocf:null, capex:40, capexFwd:40, rev:"$30B run-rate", net:"+$132B raised",
     netVal:132, shock:"~$200B Google Cloud commitment (~$40B/yr &divide; 5yr) vs ~$4.5B FY25 revenue", badge:["b-nofort","Runs on others&rsquo; money"] },
-  { name:"Oracle", meta:"FY26 (May 2026) &middot; FCF &minus;$23.7B &middot; RPO $638B &mdash; $300B = OpenAI", color:"#ec4b3a",
-    ocf:32.0, capex:55.7, capexFwd:90, rev:"Cloud ~$37B", net:-145,
+  { name:"Oracle", meta:"FY26 (May 2026) &middot; FCF &minus;$23.7B &middot; gross margin <span style=\"color:#ff8a6f\">77%&rarr;63%</span>", color:"#ec4b3a",
+    ocf:32.0, capex:55.7, capexFwd:90, rev:"Cloud ~$37B", net:-145, concentration:{total:638, named:300, label:"OpenAI"},
     shock:"Only public name spending more than it earns &mdash; on ~$156B of debt; $300B of its $638B backlog (~47%) is a single OpenAI deal", badge:["b-credit","Credit card"] },
   { name:"Amazon", meta:"FY25 / TTM Mar&rsquo;26 &middot; FCF collapsed to $1.2B", color:"#ff9900",
     ocf:148.5, capex:131.8, capexFwd:200, rev:"AWS $129B", net:57,
@@ -295,6 +300,8 @@ function render(){
            <div class="track"><div class="fill burn" style="width:${cxW}%"></div></div>
            <span class="barval r">${fmtB(capex)}</span></div>`;
 
+    const concBar = d.concentration ? `<div class="concbar"><div class="conclbl">RPO backlog $${d.concentration.total}B &mdash; ${Math.round(d.concentration.named/d.concentration.total*100)}% is one customer</div><div class="conctrack"><div class="concfill" style="width:${Math.round(d.concentration.named/d.concentration.total*100)}%">$${d.concentration.named}B ${d.concentration.label}</div><div class="concrest">$${d.concentration.total-d.concentration.named}B others</div></div></div>` : "";
+
     const covCell = d.private
       ? `<div class="num bad">0&times;</div><div class="clbl">no coverage</div>`
       : `<div class="num ${covClass(c)}">${c.toFixed(2)}&times;</div><div class="clbl">OCF &divide; capex</div>`;
@@ -311,7 +318,7 @@ function render(){
         <div class="meta">${d.meta}</div>
         <span class="badge ${d.badge[0]}">${d.badge[1]}</span>
       </div>
-      <div class="bars">${fortBar}${burnBar}</div>
+      <div class="bars">${fortBar}${burnBar}${concBar}</div>
       <div class="cov"><div class="covbox">${covCell}</div><div class="netbox">${netCell}</div></div>`;
     board.appendChild(row);
   }
