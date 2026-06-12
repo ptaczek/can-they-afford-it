@@ -135,7 +135,7 @@
       <small>
         <b class="ok">Three can shrug it off</b> &mdash; Microsoft, Alphabet, Meta fund the entire buildout from spare cash.&nbsp;
         <b class="warn">One fortress is straining</b> &mdash; Amazon&rsquo;s free cash flow has nearly vanished.&nbsp;
-        <b class="bad">One is doing it on a credit card</b> &mdash; Oracle spends ~2&times; what it earns, on $129B of debt.&nbsp;
+        <b class="bad">One is doing it on a credit card</b> &mdash; Oracle spends ~2&times; what it earns, on ~$156B of debt.&nbsp;
         <b class="bad">Two are spending other people&rsquo;s money</b> &mdash; OpenAI and Anthropic have no business underneath at all.
       </small>
     </div>
@@ -149,9 +149,9 @@
     </div>
 
     <div class="cards">
-      <div class="card"><div class="n r" id="c-total">$950B</div><div class="l">Combined 2026 AI capex (est.)</div></div>
-      <div class="card"><div class="n g">4 of 7</div><div class="l">Can self-fund it &mdash; on FY2025 actuals</div></div>
-      <div class="card"><div class="n y">0 of 7</div><div class="l">Still above 1.0&times; on 2026 guidance</div></div>
+      <div class="card"><div class="n r" id="c-capex">$630B</div><div class="l" id="l-capex">Combined AI capex &mdash; FY2025</div></div>
+      <div class="card"><div class="n g" id="c-selffund">4 of 7</div><div class="l">Cover their own capex (&ge;1.0&times;)</div></div>
+      <div class="card"><div class="n y" id="c-cohort">0.95&times;</div><div class="l">All 7 combined: OCF &divide; capex</div></div>
     </div>
   </header>
 
@@ -257,6 +257,24 @@ function sortData(){
   return arr;
 }
 
+function renderCards(){
+  const cxKey = mode === "fwd" ? "capexFwd" : "capex";
+  let totalCapex = 0, totalOcf = 0, selfFund = 0;
+  for (const d of DATA){
+    totalCapex += d[cxKey];
+    if (!d.private){ totalOcf += d.ocf; if (cov(d, mode) >= 1) selfFund++; }
+  }
+  const cohort = totalOcf / totalCapex;
+  document.getElementById("c-capex").textContent = "$" + Math.round(totalCapex) + "B";
+  document.getElementById("l-capex").innerHTML = "Combined AI capex &mdash; " + (mode === "fwd" ? "2026 guidance" : "FY2025");
+  const sf = document.getElementById("c-selffund");
+  sf.textContent = selfFund + " of 7";
+  sf.className = "n " + (selfFund >= 4 ? "g" : selfFund === 0 ? "r" : "y");
+  const ch = document.getElementById("c-cohort");
+  ch.textContent = cohort.toFixed(2) + "×";
+  ch.className = "n " + (cohort >= 1 ? "g" : cohort >= 0.8 ? "y" : "r");
+}
+
 function render(){
   const board = document.getElementById("board");
   board.innerHTML = "";
@@ -304,6 +322,7 @@ document.getElementById("mode").addEventListener("click", e=>{
   const b = e.target.closest("button"); if(!b) return;
   mode = b.dataset.mode;
   [...e.currentTarget.children].forEach(x=>x.classList.toggle("on", x===b));
+  renderCards();
   render();
 });
 document.getElementById("sort").addEventListener("click", e=>{
@@ -314,7 +333,7 @@ document.getElementById("sort").addEventListener("click", e=>{
 });
 
 // live ticker: combined 2026E capex ~$850B/yr
-const COMBINED = 950e9, perSec = COMBINED / (365.25*24*3600);
+const COMBINED = 965e9, perSec = COMBINED / (365.25*24*3600);
 const t0 = performance.now();
 const tick = document.getElementById("tick");
 function loop(now){
@@ -324,6 +343,7 @@ function loop(now){
 }
 requestAnimationFrame(loop);
 
+renderCards();
 render();
 </script>
 </body>
