@@ -162,11 +162,11 @@
     </div>
     <div class="spacer"></div>
     <div class="sort" id="sort">
-      <button data-k="danger" class="on">Most precarious</button>
-      <button data-k="cov">Coverage</button>
-      <button data-k="net">Net cash</button>
-      <button data-k="capex">Capex</button>
-      <button data-k="az">A&ndash;Z</button>
+      <button data-k="danger" class="on" title="Composite: self-funding + cash buffer relative to capex (worst first)">Most precarious</button>
+      <button data-k="cov" title="Operating cash flow &divide; capex, the raw ratio (highest first)">Coverage</button>
+      <button data-k="net" title="Net cash / net debt position">Net cash</button>
+      <button data-k="capex" title="AI capex / compute spend (largest first)">Capex</button>
+      <button data-k="az" title="Alphabetical">A&ndash;Z</button>
     </div>
   </div>
 
@@ -185,10 +185,10 @@
 
   <footer>
     <h3>How to read it</h3>
-    A tall <span style="color:var(--fort)">green</span> bar dwarfing a short <span style="color:var(--burn)">red</span> one = a cash fortress easily covering its AI spend. When red overtakes green, the company is funding AI from its balance sheet, not its surplus. The labs have <span style="color:#ff7ad0">no green bar at all</span>. Net cash is positive (own the money) or negative (owe it).
+    A tall <span style="color:var(--fort)">green</span> bar dwarfing a short <span style="color:var(--burn)">red</span> one = a cash fortress easily covering its AI spend. When red overtakes green, the company is funding AI from its balance sheet, not its surplus. The labs have <span style="color:#ff7ad0">no green bar at all</span>. Net cash is positive (own the money) or negative (owe it). Two sort lenses disagree at the top: <b>Most precarious</b> blends self-funding with cash buffer (worst first); <b>Coverage</b> is the raw OCF&divide;capex ratio (best first). And the keystone fact &mdash; <b>over half of Oracle&rsquo;s $638B backlog is a single OpenAI contract</b> &mdash; means the most precarious <em>public</em> name&rsquo;s biggest asset is an IOU from the most precarious <em>private</em> one. Affordability all the way down.
 
     <h3>Methodology &amp; honest caveats</h3>
-    Burn Coverage uses <span class="rep">reported</span> operating cash flow &divide; <span class="rep">reported</span> capital expenditure. &ldquo;Capex&rdquo; is used as the AI-spend proxy because for these firms it is now overwhelmingly AI data-centre buildout &mdash; though a minority is non-AI (fulfilment, offices). Microsoft capex shown on the cash &ldquo;additions to property &amp; equipment&rdquo; basis (~$64B FY25; ~$88B incl. finance leases). Amazon OCF is trailing-twelve-months to Mar&nbsp;2026; net cash shown on a long-term-debt basis (it flips to net-debt if operating leases are included). Net cash = cash &amp; marketable securities &minus; debt; Oracle uses total notes payable ($129.5B). The labs own no data centres, so their bar is annualised compute <em>commitment</em> &mdash; OpenAI ~$1.4T &divide; ~8yr &asymp; $175B, Anthropic ~$200B &divide; 5yr &asymp; $40B &mdash; an <span class="est">estimate</span>, not capex; they have no public cash-flow statement. The $950B combined-capex ticker is an <span class="est">estimate</span> built from 2026 guidance midpoints (labs on a commitment basis) and is illustrative.
+    Burn Coverage uses <span class="rep">reported</span> operating cash flow &divide; <span class="rep">reported</span> capital expenditure. &ldquo;Capex&rdquo; is used as the AI-spend proxy because for these firms it is now overwhelmingly AI data-centre buildout &mdash; though a minority is non-AI (fulfilment, offices). Microsoft capex shown on the cash &ldquo;additions to property &amp; equipment&rdquo; basis (~$64B FY25; ~$88B incl. finance leases). Amazon OCF is trailing-twelve-months to Mar&nbsp;2026; net cash shown on a long-term-debt basis (it flips to net-debt if operating leases are included). Net cash = cash &amp; marketable securities &minus; debt; Oracle shown on the ~$156B total-debt figure now cited (up ~50% YoY; the Q4 release line was $129.5B notes payable) less ~$11B cash &asymp; &minus;$145B. The labs own no data centres, so their bar is annualised compute <em>commitment</em> &mdash; OpenAI ~$1.4T &divide; ~8yr &asymp; $175B, Anthropic ~$200B &divide; 5yr &asymp; $40B &mdash; an <span class="est">estimate</span>, not capex; they have no public cash-flow statement. The $950B combined-capex ticker is an <span class="est">estimate</span> built from 2026 guidance midpoints (labs on a commitment basis) and is illustrative.
 
     <h3>Sources</h3>
     <span class="rep">Reported</span> &mdash;
@@ -213,9 +213,9 @@ const DATA = [
   { name:"Anthropic", meta:"private &middot; founded 2021 &middot; $965B val (Apr 2026)", color:"#cc7a52",
     private:true, ocf:null, capex:40, capexFwd:40, rev:"$30B run-rate", net:"+$132B raised",
     netVal:132, shock:"~$200B Google Cloud commitment (~$40B/yr &divide; 5yr) vs ~$4.5B FY25 revenue", badge:["b-nofort","Runs on others&rsquo; money"] },
-  { name:"Oracle", meta:"FY26 (May 2026) &middot; FCF &minus;$23.7B &middot; RPO $638B", color:"#ec4b3a",
-    ocf:32.0, capex:55.7, capexFwd:90, rev:"Cloud ~$37B", net:-118,
-    shock:"Only public name spending more than it earns &mdash; on $129.5B of debt", badge:["b-credit","Credit card"] },
+  { name:"Oracle", meta:"FY26 (May 2026) &middot; FCF &minus;$23.7B &middot; RPO $638B &mdash; &gt;50% = OpenAI", color:"#ec4b3a",
+    ocf:32.0, capex:55.7, capexFwd:90, rev:"Cloud ~$37B", net:-145,
+    shock:"Only public name spending more than it earns &mdash; on ~$156B of debt; &gt;50% of its $638B backlog rides on OpenAI", badge:["b-credit","Credit card"] },
   { name:"Amazon", meta:"FY25 / TTM Mar&rsquo;26 &middot; FCF collapsed to $1.2B", color:"#ff9900",
     ocf:148.5, capex:131.8, capexFwd:200, rev:"AWS $129B", net:57,
     shock:"Fortress intact, but free cash flow has nearly evaporated", badge:["b-strain","Straining"] },
@@ -241,17 +241,17 @@ const cov = (d, m) => {
 const covClass = c => c === null ? "bad" : c >= 1.3 ? "ok" : c >= 1.0 ? "warn" : "bad";
 const fmtB = v => "$" + (v % 1 === 0 ? v : v.toFixed(1)) + "B";
 
-function rankDanger(d){ // ascending = most precarious first
-  if (d.private) return -100 + d.netVal/1000;        // labs first
-  const c = cov(d, mode);
-  return c;                                           // then by coverage
+function affordability(d){ // higher = safer; lower = more precarious
+  if (d.private) return -1000 + d.netVal/1000;          // labs pinned most-precarious (no fortress)
+  const cx = mode === "fwd" ? d.capexFwd : d.capex;
+  return cov(d, mode) + d.net / cx;                      // self-funding + cash-buffer, both in years-of-capex
 }
 
 function sortData(){
   const arr = DATA.slice();
-  if (sortKey === "danger") arr.sort((a,b)=>rankDanger(a)-rankDanger(b));
-  else if (sortKey === "cov") arr.sort((a,b)=>(cov(a,mode)??-1)-(cov(b,mode)??-1));
-  else if (sortKey === "net") arr.sort((a,b)=>(a.private?a.netVal:a.net)-(b.private?b.netVal:b.net)); // not perfectly comparable; ok
+  if (sortKey === "danger") arr.sort((a,b)=>affordability(a)-affordability(b));          // composite, most precarious first
+  else if (sortKey === "cov") arr.sort((a,b)=>(cov(b,mode)??-1)-(cov(a,mode)??-1));       // pure ratio, highest coverage first
+  else if (sortKey === "net") arr.sort((a,b)=>(a.private?a.netVal:a.net)-(b.private?b.netVal:b.net));
   else if (sortKey === "capex") arr.sort((a,b)=> (b[mode==="fwd"?"capexFwd":"capex"]) - (a[mode==="fwd"?"capexFwd":"capex"]));
   else if (sortKey === "az") arr.sort((a,b)=>a.name.localeCompare(b.name));
   return arr;
