@@ -251,7 +251,7 @@ function sortData(){
   const arr = DATA.slice();
   if (sortKey === "danger") arr.sort((a,b)=>affordability(a)-affordability(b));          // composite, most precarious first
   else if (sortKey === "cov") arr.sort((a,b)=>(cov(b,mode)??-1)-(cov(a,mode)??-1));       // pure ratio, highest coverage first
-  else if (sortKey === "net") arr.sort((a,b)=>(a.private?a.netVal:a.net)-(b.private?b.netVal:b.net));
+  else if (sortKey === "net") arr.sort((a,b)=>(b.private?b.netVal:b.net)-(a.private?a.netVal:a.net));
   else if (sortKey === "capex") arr.sort((a,b)=> (b[mode==="fwd"?"capexFwd":"capex"]) - (a[mode==="fwd"?"capexFwd":"capex"]));
   else if (sortKey === "az") arr.sort((a,b)=>a.name.localeCompare(b.name));
   return arr;
